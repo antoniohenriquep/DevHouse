@@ -5,9 +5,10 @@ const cors = require('cors')
 const {mongoURI} = require('./src/config/db')
 
 //Importando rotas
-const sessions = require('./src/routes/sessions')
-const houses = require('./src/routes/houses')
-const dashboard = require('./src/routes/dashboard')
+// const sessions = require('./src/routes/sessions')
+// const houses = require('./src/routes/houses')
+// const dashboard = require('./src/routes/dashboard')
+const routes = require('./src/routes/routes')
 
 //Instanciando express
 const app = express()
@@ -28,18 +29,8 @@ app.use(express.json())
 
 //Rotas
     //Sessions
-app.use('/sessions',sessions)
+app.use('/',routes)
 
-    //Houses
-app.use('/houses',houses)
-
-    //Dashboard
-app.use('/dashboard',dashboard)
-
-    //Raiz
-app.get('/',(req,res)=>{
-    return res.json({ok:true})
-})
 
 app.listen(7072,()=>{
     console.log('Servidor rodando')

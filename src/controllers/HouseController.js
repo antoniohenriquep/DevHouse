@@ -1,12 +1,25 @@
 const House = require('../models/House')
 const User = require('../models/User')
+const Yup = require('yup')
 
-
-async function houseStore(req,res)
+async function store(req,res)
 {
+    //Schema utilizado para a fazer a validação com o Yup
+    const schema = Yup.object().shape({
+        description:Yup.string().required(),
+        price: Yup.number().required(),
+        location: Yup.string().required(),
+        available: Yup.boolean().required()
+    })
     const {filename} = req.file
     const{description,price,location,available} = req.body
     const {user_id} = req.headers
+
+    //Verifica se as informações passadas no body são validas
+    if(!(await schema.isValid(req.body)))
+    {
+        return res.status(400).json({error:'Falha na validação'})
+    }
 
     const house = await House.create({
         user:user_id,
@@ -21,7 +34,7 @@ async function houseStore(req,res)
     return res.json({house})
 }
 
-async function houseIndex(req,res)
+async function index(req,res)
 {
     
     const {available} = req.query
@@ -39,8 +52,17 @@ async function houseIndex(req,res)
     }
 }
 
-async function houseUpdate(req,res)
+async function update(req,res)
 {
+    //Schema utilizado para a fazer a validação com o Yup
+    const schema = Yup.object().shape({
+        description:Yup.string().required(),
+        price: Yup.number().required(),
+        location: Yup.string().required(),
+        available: Yup.boolean().required()
+    })
+
+
     const {filename} = req.file
     const {id} = req.params
     const {description,price,location,available} = req.body
@@ -48,6 +70,12 @@ async function houseUpdate(req,res)
 
     const user = await User.findById(user_id)
     const house = await House.findById(id)
+
+    //Verifica se as informações passadas no body são validas
+    if(!(await schema.isValid(req.body)))
+    {
+        return res.status(400).json({error:'Falha na validação'})
+    }    
 
     //Verificando se o usuario logado é o mesmo que cadastrou a casa
     if(String(user._id) !== String(house.user))
@@ -66,7 +94,7 @@ async function houseUpdate(req,res)
     return res.send()
 }
 
-async function houseDestroy(req,res)
+async function destroy(req,res)
 {
     const {id} = req.body
     const {user_id} = req.headers
@@ -84,4 +112,4 @@ async function houseDestroy(req,res)
     return res.send({message:"Excluido com sucesso"})
 }
 
-module.exports = {houseStore, houseIndex, houseUpdate, houseDestroy}
+module.exports = {store, index, update, destroy}
